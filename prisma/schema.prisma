@@ -12,3 +12,55 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Estado {
+  id_estado  Int         @id @default(autoincrement())
+  nombre     String      @unique // Asegurar la unicidad del nombre del estado
+  Municipios Municipio[]
+}
+
+model Municipio {
+  id_municipio Int      @id @default(autoincrement())
+  nombre      String
+  id_estado   Int
+  Estado      Estado    @relation(fields: [id_estado], references: [id_estado])
+  Localidades Localidad[]
+
+  @@unique([nombre, id_estado]) // Evitar duplicados en el mismo estado
+}
+
+model Localidad {
+  id_localidad Int       @id @default(autoincrement())
+  nombre       String
+  cp           String?
+  id_municipio Int
+  Municipio    Municipio @relation(fields: [id_municipio], references: [id_municipio])
+  Direcciones  Direccion[]
+}
+
+model Cliente {
+  id_cliente Int        @id @default(autoincrement())
+  nombre     String
+  apellidos  String
+  rfc        String     @unique
+  email      String     @unique
+  telefono   String
+  estatus    Estatus    @default(activo)
+  Direcciones Direccion[]
+}
+
+model Direccion {
+  id_direccion   Int       @id @default(autoincrement())
+  id_cliente     Int
+  id_localidad   Int
+  calle          String
+  numero_exterior String
+  numero_interior String?
+  Cliente        Cliente   @relation(fields: [id_cliente], references: [id_cliente])
+  Localidad      Localidad @relation(fields: [id_localidad], references: [id_localidad])
+}
+
+enum Estatus {
+  activo
+  inactivo
+}
