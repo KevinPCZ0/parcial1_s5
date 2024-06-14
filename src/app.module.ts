@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
+import { LocalidadesModule } from './localidades/localidades.module';
+
 
 
 @Module({
-  imports: [],
+  imports: [LocalidadesModule],
   controllers: [],
   providers: [],
 })
