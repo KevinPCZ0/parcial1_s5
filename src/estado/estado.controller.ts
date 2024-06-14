@@ -3,7 +3,7 @@ import { EstadoService } from './estado.service';
 import { CreateEstadoDto } from './dto/create-estado.dto';
 import { UpdateEstadoDto } from './dto/update-estado.dto';
 
-@Controller('estado')
+@Controller('estados')
 export class EstadoController {
   constructor(private readonly estadoService: EstadoService) {}
 

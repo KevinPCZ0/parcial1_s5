@@ -8,7 +8,6 @@ import { PrismaService } from 'prisma.service';
 export class LocalidadesService {
   constructor(private prisma: PrismaService) {}
 
-
   async create(data: CreateLocalidadeDto) {
     const normalizedNombre = (data.nombre);
     return this.prisma.localidad.create({
@@ -29,7 +28,6 @@ export class LocalidadesService {
       where: { id_localidad: id },
     });
   }
-
 
   async update(id: number, data: UpdateLocalidadeDto) {
     const normalizedNombre = (data.nombre);

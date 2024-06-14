@@ -50,5 +50,5 @@ export class CreateClienteDto {
 
   @ValidateNested({ each: true })
   @Type(() => CreateDireccionDto)
-  Direcciones: CreateDireccionDto[];
+  Direcciones?: CreateDireccionDto[];
 }

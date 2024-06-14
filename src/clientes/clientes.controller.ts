@@ -9,7 +9,12 @@ export class ClientesController {
 
   @Post()
   create(@Body() createClienteDto: CreateClienteDto) {
-    return this.clientesService.create(createClienteDto);
+    // Verifica que Direcciones sea un arreglo antes de intentar hacer map
+    if (createClienteDto.Direcciones && Array.isArray(createClienteDto.Direcciones)) {
+      return this.clientesService.create(createClienteDto);
+    } else {
+      throw new Error('Direcciones debe ser un arreglo válido.');
+    }
   }
 
   @Get()
@@ -24,7 +29,12 @@ export class ClientesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
-    return this.clientesService.update(+id, updateClienteDto);
+    // Verifica que Direcciones sea un arreglo antes de intentar hacer map
+    if (updateClienteDto.Direcciones && Array.isArray(updateClienteDto.Direcciones)) {
+      return this.clientesService.update(+id, updateClienteDto);
+    } else {
+      throw new Error('Direcciones debe ser un arreglo válido.');
+    }
   }
 
   @Delete(':id')
