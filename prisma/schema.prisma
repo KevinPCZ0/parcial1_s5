@@ -46,7 +46,7 @@ model Cliente {
   email      String     @unique
   telefono   String
   estatus    Estatus    @default(activo)
-  Direcciones Direccion[]
+  Direcciones Direccion[]  
 }
 
 model Direccion {

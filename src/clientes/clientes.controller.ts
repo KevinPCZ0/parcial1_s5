@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { ClientesService } from './clientes.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
@@ -8,12 +8,15 @@ export class ClientesController {
   constructor(private readonly clientesService: ClientesService) {}
 
   @Post()
-  create(@Body() createClienteDto: CreateClienteDto) {
-    // Verifica que Direcciones sea un arreglo antes de intentar hacer map
-    if (createClienteDto.Direcciones && Array.isArray(createClienteDto.Direcciones)) {
-      return this.clientesService.create(createClienteDto);
-    } else {
-      throw new Error('Direcciones debe ser un arreglo válido.');
+  async create(@Body() createClienteDto: CreateClienteDto) {
+    try {
+      const cliente = await this.clientesService.createCliente(createClienteDto);
+      return cliente;
+    } catch (error) {
+      if (error.response?.statusCode === 409) {
+        throw new HttpException({ message: 'El RFC o el email ya están registrados.' }, HttpStatus.CONFLICT);
+      }
+      throw new HttpException({ message: 'Error al crear el cliente.' }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -28,17 +31,28 @@ export class ClientesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
-    // Verifica que Direcciones sea un arreglo antes de intentar hacer map
-    if (updateClienteDto.Direcciones && Array.isArray(updateClienteDto.Direcciones)) {
-      return this.clientesService.update(+id, updateClienteDto);
-    } else {
-      throw new Error('Direcciones debe ser un arreglo válido.');
+  async update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
+    if (!updateClienteDto.Direcciones || !Array.isArray(updateClienteDto.Direcciones)) {
+      throw new HttpException('Direcciones debe ser un arreglo válido.', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      return await this.clientesService.update(+id, updateClienteDto);
+    } catch (error) {
+      throw new HttpException('Error al actualizar el cliente.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientesService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      const deletedCliente = await this.clientesService.remove(+id);
+      return deletedCliente;
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof InternalServerErrorException) {
+        throw error; // Propaga la excepción para manejarla en un nivel superior
+      }
+      throw new InternalServerErrorException('Error al eliminar el cliente.'); // Lanza un error genérico para otros casos
+    }
   }
 }
