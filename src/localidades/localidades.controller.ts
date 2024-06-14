@@ -8,8 +8,8 @@ export class LocalidadesController {
   constructor(private readonly localidadesService: LocalidadesService) {}
 
   @Post()
-  create(@Body() createLocalidadeDto: CreateLocalidadeDto) {
-    return this.localidadesService.create(createLocalidadeDto);
+  create(@Body() createLocalidadDto: CreateLocalidadeDto) {
+    return this.localidadesService.create(createLocalidadDto);
   }
 
   @Get()
